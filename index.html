@@ -465,7 +465,7 @@
         // ============================================================
         // Enviar formulário
         // ============================================================
-        document.getElementById('formularioReserva').addEventListener('submit', async function(e) {
+        document.getElementById('formularioReserva').addEventListener('submit', function(e) {
             e.preventDefault();
             
             // Validar confirmação
@@ -485,38 +485,43 @@
             try {
                 console.log("Dados a enviar:", dados);
                 
-                // Usar google.script.run (método nativo do Google Apps Script)
-                // Isso funciona quando a página é servida pelo Google Apps Script
+                // URL do Google Apps Script - USAR /usercontent (não /dev)
+                const urlGAS = "https://script.google.com/macros/s/AKfycbwKXs31zuKKSt9eGS2BKn0KsUxrbh_DpKXDnrxFuAUXbOf--jhqA17lKSYCufUuk5-0/usercontent";
+
                 
-                // ALTERNATIVA 1: Se estiver em GitHub Pages, usar fetch com method POST simples
-                const urlGAS = "https://script.google.com/macros/s/AKfycbxSEB3t57f6PMe4uMjlt65jK1hQf2rzLDshsrzvZOE/usercontent";
-                
-                const response = await fetch(urlGAS, {
+                // Fetch com Content-Type: text/plain para evitar CORS preflight
+                fetch(urlGAS, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'text/plain;charset=utf-8'
                     },
                     body: JSON.stringify(dados)
+                }).then(response => {
+                    console.log("Resposta recebida:", response.status);
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // Mostrar sucesso
+                    mostrarAlerta('✅ Pré-reserva confirmada com sucesso! Você receberá uma confirmação via email.', 'success');
+                    document.getElementById('formularioReserva').reset();
+                    
+                    setTimeout(() => {
+                        document.getElementById('formularioReserva').style.display = 'none';
+                        document.querySelector('.header').innerHTML = '<h1>🎉 Obrigado!</h1><p>Sua pré-reserva foi confirmada. Verificaremos os dados e você receberá um email de confirmação.</p>';
+                    }, 2000);
+                    
+                }).catch(erro => {
+                    console.error('Erro no fetch:', erro);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('btnSubmit').disabled = false;
+                    mostrarAlerta('⚠️ Erro na conexão: ' + erro.message, 'error');
                 });
-                
-                console.log("Response status:", response.status);
-                
-                document.getElementById('loading').style.display = 'none';
-                
-                // Considerar sucesso se não houver erro
-                mostrarAlerta('✅ Pré-reserva confirmada com sucesso! Você receberá uma confirmação via email.', 'success');
-                document.getElementById('formularioReserva').reset();
-                
-                setTimeout(() => {
-                    document.getElementById('formularioReserva').style.display = 'none';
-                    document.querySelector('.header').innerHTML = '<h1>🎉 Obrigado!</h1><p>Sua pré-reserva foi confirmada. Verificaremos os dados e você receberá um email de confirmação.</p>';
-                }, 2000);
                 
             } catch (erro) {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('btnSubmit').disabled = false;
-                console.error('Erro completo:', erro);
-                mostrarAlerta('⚠️ Erro na conexão: ' + erro.message, 'error');
+                console.error('Erro:', erro);
+                mostrarAlerta('⚠️ Erro: ' + erro.message, 'error');
             }
         });
         
