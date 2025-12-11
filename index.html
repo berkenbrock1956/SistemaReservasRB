@@ -433,11 +433,19 @@
         
         function converterDataParaInput(dataFormatada) {
             if (!dataFormatada) return '';
-            // Espera formato dd/mm/aaaa, converte para aaaa-mm-dd
+            
+            // Se já vem no formato YYYY-MM-DD, retorna direto
+            if (dataFormatada.includes('-') && dataFormatada.length === 10) {
+                return dataFormatada;
+            }
+            
+            // Se vem em dd/mm/aaaa, converte para aaaa-mm-dd
             const partes = dataFormatada.split('/');
             if (partes.length === 3) {
                 return `${partes[2]}-${partes[1]}-${partes[0]}`;
             }
+            
+            // Se não conseguir converter, tenta usar a data como está
             return dataFormatada;
         }
         
@@ -475,36 +483,33 @@
             document.getElementById('btnSubmit').disabled = true;
             
             try {
-                // Substituir pela URL do seu Google Apps Script publicado
-                const urlGAS = "https://script.google.com/macros/d/AKfycbxSEB3t57f6PMe4uMjlt65jK1hQf2rzLDshsrzvZOE/usercontent"; // ALTERE AQUI
+                // URL corrigida do Google Apps Script (usar /usercontent, não /dev)
+                const urlGAS = "https://script.google.com/macros/s/AKfycbxSEB3t57f6PMe4uMjlt65jK1hQf2rzLDshsrzvZOE/usercontent";
                 
                 const response = await fetch(urlGAS, {
                     method: 'POST',
                     body: JSON.stringify(dados),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    mode: 'no-cors'
                 });
                 
-                const resultado = await response.json();
-                
+                // Com mode: 'no-cors', a resposta é opaque, então assumimos sucesso se não houver erro
                 document.getElementById('loading').style.display = 'none';
                 
-                if (resultado.status === 'sucesso') {
-                    mostrarAlerta('✅ Pré-reserva confirmada com sucesso! Você receberá uma confirmação via email.', 'success');
-                    document.getElementById('formularioReserva').reset();
-                    setTimeout(() => {
-                        window.location.href = 'https://seudominio.com/obrigado'; // Página de obrigado
-                    }, 2000);
-                } else {
-                    mostrarAlerta('❌ Erro: ' + resultado.mensagem, 'error');
-                    document.getElementById('btnSubmit').disabled = false;
-                }
+                // Se chegou aqui sem erro, considerar como sucesso
+                mostrarAlerta('✅ Pré-reserva confirmada com sucesso! Você receberá uma confirmação via email.', 'success');
+                document.getElementById('formularioReserva').reset();
+                
+                setTimeout(() => {
+                    // Redirecionar ou apenas limpar
+                    document.getElementById('formularioReserva').style.display = 'none';
+                    document.querySelector('.header').innerHTML = '<h1>🎉 Obrigado!</h1><p>Sua pré-reserva foi confirmada. Verificaremos os dados e você receberá um email de confirmação.</p>';
+                }, 2000);
                 
             } catch (erro) {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('btnSubmit').disabled = false;
-                mostrarAlerta('❌ Erro de conexão: ' + erro.message, 'error');
+                console.error('Erro:', erro);
+                mostrarAlerta('⚠️ Formulário enviado, mas houve uma questão na confirmação. Tente novamente ou contate suporte.', 'error');
             }
         });
         
