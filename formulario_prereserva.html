@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmação de Pré-Reserva</title>
+    <title>Confirmação dos Dados da Reserva</title>
     <style>
         * {
             margin: 0;
@@ -270,8 +270,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏖️ Confirmação de Pré-Reserva</h1>
-            <p>Complete o formulário para confirmar sua reserva</p>
+            <h1>🏖️ Confirmação dos dados da Reserva</h1>
+            <p>Complete o formulário para o Pré Checkin</p>
         </div>
         
         <div id="alerta" class="alert"></div>
@@ -283,7 +283,7 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Unidade Reservada <span class="required">*</span></label>
+                        <label>Unidade (un01=ap06/un02=ap07/un03=casa) <span class="required">*</span></label>
                         <input type="text" name="unidade" id="unidade" disabled>
                     </div>
                     <div class="form-group">
@@ -307,10 +307,6 @@
                     <div class="form-group">
                         <label>Diárias <span class="required">*</span></label>
                         <input type="text" name="diarias" id="diarias" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label>Diária (R$) <span class="required">*</span></label>
-                        <input type="text" name="diaria" id="diaria" disabled>
                     </div>
                 </div>
             </div>
@@ -375,11 +371,11 @@
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="radio" name="comoConheceu" value="Já sou cliente" id="cliente">
-                            <label for="cliente">Já sou cliente</label>
+                            <label for="cliente">Sou cliente</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="radio" name="comoConheceu" value="Indicação de conhecidos" id="indicacao">
-                            <label for="indicacao">Indicação de conhecidos</label>
+                            <label for="indicacao">Indicação conhecidos</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="radio" name="comoConheceu" value="Internet/Redes sociais" id="internet">
@@ -395,7 +391,7 @@
                 <div class="form-group">
                     <div class="checkbox-item">
                         <input type="checkbox" name="confirmacao" id="confirmacao" required>
-                        <label for="confirmacao">Declaro que todas as informações fornecidas são verdadeiras <span class="required">*</span></label>
+                        <label for="confirmacao">Declaro que informações fornecidas são verdadeiras <span class="required">*</span></label>
                     </div>
                 </div>
             </div>
@@ -491,7 +487,7 @@
                 document.getElementById('loading').style.display = 'none';
                 
                 if (resultado.status === 'sucesso') {
-                    mostrarAlerta('✅ Pré-reserva confirmada com sucesso! Você receberá uma confirmação via email.', 'success');
+                    mostrarAlerta('✅ Pré-reserva confirmada com sucesso! ', 'success');
                     document.getElementById('formularioReserva').reset();
                     setTimeout(() => {
                         window.location.href = 'https://seudominio.com/obrigado'; // Página de obrigado
